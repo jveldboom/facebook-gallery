@@ -118,7 +118,7 @@ class fb_gallery
 	?>
 	
 	<div class="footer">
-		Please visit our github page if you have any questions or would like to help improve this.
+		Please visit our <a href="http://jveldboom.github.com/fb_gallery/">github page</a> if you have any questions or would like to help improve this.
 	</div>
 </body>
 </html>
