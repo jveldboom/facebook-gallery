@@ -29,7 +29,6 @@
 			<ul class="nav">
 				<li class="active"><a href="http://jveldboom.github.com/facebook-gallery/">github</a></li>
 				<li><a href="https://github.com/jveldboom/facebook-gallery/issues">issues</a></li>
-				<li><a href="#about">about</a></li>
 			</ul>
 		</div>
 	</div>
