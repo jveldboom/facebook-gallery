@@ -1,0 +1,11 @@
+body {
+	padding-top: 50px;		
+}
+.thumbnail i {
+	background-color: #EEEEEE;
+  	background-position: center 25%;
+  	background-repeat: no-repeat;
+  	display: block;
+	height: 116px;
+	width: 149px;
+}
