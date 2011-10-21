@@ -1,12 +1,12 @@
 PHP Facebook Gallery
 ====================
 
-Simple PHP program to display public Facebook galleries. *[Live Demo](http://www.linein.org/examples/facebook-gallery/)*
+Simple PHP program to display public Facebook galleries. **[Live Demo](http://www.linein.org/examples/facebook-gallery/)**
 
-Features:
-* Gallery caching to static HTML files
-* Uses [prettyPhoto](http://www.no-margin-for-errors.com/projects/prettyphoto-jquery-lightbox-clone/) for large images
-* Clean UI based on [Twitter Bootstrap](http://twitter.github.com/bootstrap/)
+**Features:**
+- Gallery caching to static HTML files
+- Uses [prettyPhoto](http://www.no-margin-for-errors.com/projects/prettyphoto-jquery-lightbox-clone/) for large images
+- Clean UI based on [Twitter Bootstrap](http://twitter.github.com/bootstrap/)
 
 
 Audience / Usage
