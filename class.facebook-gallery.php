@@ -1,5 +1,5 @@
 <?php
-class fb_gallery
+class FBGallery
 {
 	public function __construct($id,$breadcrumbs,$cache='y',$cache_loc='cache') {
 		/**
