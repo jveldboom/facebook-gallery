@@ -23,8 +23,7 @@ class FBGallery
 		*/
 		if(!empty($id))
 		{
-			if($type == 'photos'){$type = 'photos';}
-			else{$type = 'albums';}			
+			if($type != 'photos'){$type = 'albums';}			
 			
 			$url = 'https://graph.facebook.com/'.$id.'/'.$type;
 			$ch = curl_init($url);
@@ -118,7 +117,7 @@ class FBGallery
 			foreach($crumbs_array as $title => $url)
 			{
 				if($count == $counter){$divider = '';} // removed divider from last crumb
-				$crumbs .= '<li><a href="'.$url.'">'.$title.'</a>'.$divider.'</li>';
+				$crumbs .= '<li><a href="'.$url.'">'.stripslashes($title).'</a>'.$divider.'</li>';
 				++$counter;
 			}
 			
