@@ -24,9 +24,9 @@
 <div class="topbar">
 	<div class="fill">
 		<div class="container">
-			<a class="brand" href="<?php echo $_SERVER['PHP_SELF']; ?>">PHP Facebook Gallery</a>
+			<a class="brand" href="<?php echo $_SERVER['PHP_SELF']; ?>">Facebook Gallery</a>
 			<ul class="nav">
-				<li class="active"><a href="http://jveldboom.github.com/fb_gallery/">github</a></li>
+				<li class="active"><a href="http://jveldboom.github.com/facebook-gallery/">github</a></li>
 				<li><a href="https://github.com/jveldboom/fb_gallery/issues">issues</a></li>
 				<li><a href="#about">about</a></li>
 			</ul>
@@ -36,9 +36,9 @@
 
 <div class="container">	
 	<?php
-	require('class.fb_gallery.php');
+	require('class.facebook-gallery.php');
 	
-	$gallery = new fb_gallery('pepsi','y');
+	$gallery = new FBGallery('pepsi','y');
 	if(empty($_GET[id])){
 		echo $gallery->displayAlbums();
 	}
