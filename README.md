@@ -1,7 +1,7 @@
 PHP Facebook Gallery
 ====================
 
-Simple PHP program to display public Facebook galleries.
+Simple PHP program to display public Facebook galleries. [Live Demo](http://www.linein.org/examples/fb_gallery/)
 
 Audience / Usage
 ----------------
