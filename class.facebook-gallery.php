@@ -1,19 +1,22 @@
 <?php
 class FBGallery
 {
-	public function __construct($id,$breadcrumbs,$cache='y',$cache_loc='cache') {
+	public function __construct($id,$breadcrumbs,$cache=array())
+	{
 		/**
 		* Simply sets variables set in class contruction
 		*
-		* @param	$id				= Facebook page id. Could be a name or number ('Coca-Cola','photobucket')
-		* @param	$breadcrumbs	= 'n' turns off breadcrumbs. Everything else leaves them on
-		* @param	$cache			= 'n' turns off caching
-		* @param	$cache_loc		= location of where the cahced files are saved
+		* @string	$id				= Facebook page id. Could be a name or number ('Coca-Cola','photobucket')
+		* @string	$breadcrumbs	= 'n' turns off breadcrumbs. Everything else leaves them on
+		* @array		$cache			= array(
+		*											'permission'	=> 'y', // anything other than 'y' will turn caching off
+		*											'location'		=> 'cache', // location to store the cached files
+		*											'time'			=> 7200 // seconds inbetween caches (7200 seconds = 2 hours)
+		*										) 
 		*/
 		$this->id = $id;
 		$this->breadcrumbs = $breadcrumbs;
 		$this->cache = $cache;
-		$this->cache_loc = $cache_loc; // location of cached files
 	}
 	
 	function getData($id,$type='')
@@ -134,9 +137,9 @@ class FBGallery
 	##--------
 	function saveCache($id,$html)
 	{
-		if($this->cache != 'n')
+		if($this->cache['permission'] != 'n')
 		{
-			$fp = fopen($this->cache_loc.'/'.$id.'.html', 'w');
+			$fp = fopen($this->cache['location'].'/'.$id.'.html', 'w');
 			fwrite($fp, $html);
 			fclose($fp);
 		}
@@ -144,10 +147,10 @@ class FBGallery
 	
 	function loadCache($id)
 	{
-		if($this->cache != 'n')
+		if($this->cache['permission'] != 'n')
 		{
-			$cache_file = $this->cache_loc.'/'.$id.'.html';
-			if(file_exists($cache_file) AND filemtime($cache_file) > date("U") - 7200) // 2 hours
+			$cache_file = $this->cache['location'].'/'.$id.'.html';
+			if(file_exists($cache_file) AND filemtime($cache_file) > (date("U") - $this->cache['time']))
 			{
 				require($cache_file);
 				exit;

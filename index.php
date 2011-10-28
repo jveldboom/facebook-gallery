@@ -27,7 +27,7 @@
 		<div class="container">
 			<a class="brand" href="<?php echo $_SERVER['PHP_SELF']; ?>">Facebook Gallery</a>
 			<ul class="nav">
-				<li class="active"><a href="http://jveldboom.github.com/facebook-gallery/">github</a></li>
+				<li class="active"><a href="https://github.com/jveldboom/facebook-gallery">github</a></li>
 				<li><a href="https://github.com/jveldboom/facebook-gallery/issues">issues</a></li>
 			</ul>
 		</div>
@@ -38,7 +38,10 @@
 	<?php
 	require('class.facebook-gallery.php');
 	
-	$gallery = new FBGallery('pepsi','y');
+	$cache = array('permission' => 'y',
+						'location' => 'cache',
+						'time' => 7200);
+	$gallery = new FBGallery('pepsi','y',$cache);
 	if(empty($_GET[id])){
 		echo $gallery->displayAlbums();
 	}
