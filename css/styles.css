@@ -9,3 +9,5 @@ body {
 	height: 116px;
 	width: 149px;
 }
+
+.media-grid {margin-left: 12px;} /* forces gallery to be centered */
