@@ -51,7 +51,7 @@ class FBGallery
 		$data_count = count($json_array['data']);
 		for($x=0; $x<$data_count; $x++)
 		{
-			if(!empty($json_array['data'][$x]['object_id'])) // do not include empty albums
+			if(!empty($json_array['data'][$x]['object_id']) AND $json_array['data'][$x]['size'] > 0) // do not include empty albums
 			{
 				$gallery .= '<li>
 									<a href="?id='.$json_array['data'][$x]['aid'].'&title='.urlencode($json_array['data'][$x]['name']).'" title="'.$json_array['data'][$x]['name'].'" class="twipsies">
