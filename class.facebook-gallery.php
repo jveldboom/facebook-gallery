@@ -6,15 +6,17 @@ class FBGallery
 		/**
 		* Simply sets variables set in class contruction
 		*
-		* @string	$id				= Facebook page id. Could be a name or number ('Coca-Cola','photobucket')
-		* @string	$breadcrumbs	= 'n' turns off breadcrumbs. Everything else leaves them on
-		* @array		$cache			= array(
-		*											'permission'	=> 'y', // anything other than 'y' will turn caching off
-		*											'location'		=> 'cache', // location to store the cached files
-		*											'time'			=> 7200 // seconds inbetween caches (7200 seconds = 2 hours)
-		*										) 
+		* @string $id = Facebook page id. Could be a name or number ('Coca-Cola','photobucket')
+		* @string $breadcrumbs	= 'n' turns off breadcrumbs. Everything else leaves them on
+		* @array  $cache = array(
+		*                 'permission' => 'y', // anything other than 'y' will turn caching off
+		*                 'location'   => 'cache', // location to store the cached files
+		*                 'time'       => 7200 // seconds inbetween caches (7200 seconds = 2 hours)
+		*                  ) 
 		*/
-		$this->id = $id;
+		
+		$this->id = $this->getPageId($id); // if you're certain you'll always know the correct page id, just comment this line an uncomment the line below
+		//$this->id = $id;
 		$this->breadcrumbs = $breadcrumbs;
 		$this->cache = $cache;
 	}
@@ -26,9 +28,9 @@ class FBGallery
 		*/
 		if(!empty($id))
 		{
-			if($type != 'photos'){$type = 'albums';}			
-			
-			$url = 'https://graph.facebook.com/'.$id.'/'.$type;
+			if($type == 'photos'){$query = "SELECT src,src_big,caption FROM photo WHERE aid = '$id'";}
+			else{$query = "SELECT aid,object_id,name,size,type FROM album WHERE owner = '$id' ORDER BY modified DESC";}
+			$url = 'https://graph.facebook.com/fql?q='.rawurlencode($query);
 			$ch = curl_init($url);
 			curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
 			curl_setopt($ch, CURLOPT_HEADER,0);
@@ -43,17 +45,17 @@ class FBGallery
 	
 	function displayAlbums()
 	{
-		$this->loadCache($album_id); // loads cached file
+		$this->loadCache($this->id); // loads cached file
 		
 		$json_array = $this->getData($this->id,$type='albums');
 		$data_count = count($json_array['data']);
 		for($x=0; $x<$data_count; $x++)
 		{
-			if(!empty($json_array['data'][$x]['cover_photo'])) // do not include empty albums
+			if(!empty($json_array['data'][$x]['object_id'])) // do not include empty albums
 			{
 				$gallery .= '<li>
-									<a href="?id='.$json_array['data'][$x]['id'].'&title='.urlencode($json_array['data'][$x]['name']).'" title="'.$json_array['data'][$x]['name'].'" class="twipsies">
-										<span class="thumbnail"><i style="background-image:url(\'http://graph.facebook.com/'.$json_array['data'][$x]['cover_photo'].'/picture?type=album\');"></i></span>
+									<a href="?id='.$json_array['data'][$x]['aid'].'&title='.urlencode($json_array['data'][$x]['name']).'" title="'.$json_array['data'][$x]['name'].'" class="twipsies">
+										<span class="thumbnail"><i style="background-image:url(\'http://graph.facebook.com/'.$json_array['data'][$x]['object_id'].'/picture?type=album\');"></i></span>
 									</a>
 								</li>';
 			}
@@ -66,7 +68,7 @@ class FBGallery
 			$gallery = $this->addBreadCrumbs($crumbs).$gallery;
 		}
 		
-		$this->saveCache($album_id,$gallery); // cache gallery to static HTML file
+		$this->saveCache($this->id,$gallery); // saves cached HTML file
 		
 		return $gallery;
 	}
@@ -81,10 +83,10 @@ class FBGallery
 		{
 			for($x=0; $x<$data_count; $x++)
 			{
-				$json_array['data'][$x]['name'] = '';
+				$json_array['data'][$x]['caption'] = '';
 				$gallery .= '<li>
-									<a href="'.$json_array['data'][$x]['source'].'" rel="prettyPhoto['.$album_id.']" title="'.$json_array['data'][$x]['name'].'">
-										<span class="thumbnail"><i style="background-image:url(\''.$json_array['data'][$x]['picture'].'\');"></i></span>
+									<a href="'.$json_array['data'][$x]['src_big'].'" rel="prettyPhoto['.$album_id.']" title="'.$json_array['data'][$x]['caption'].'">
+										<span class="thumbnail"><i style="background-image:url(\''.$json_array['data'][$x]['src'].'\');"></i></span>
 									</a>
 								</li>';
 			}
@@ -99,7 +101,7 @@ class FBGallery
 		else{$gallery = 'no photos in this gallery';}
 		
 		
-		$this->saveCache($album_id,$gallery); // cache gallery to static HTML file
+		$this->saveCache($album_id,$gallery); // saves cached HTML file
 		
 		return $gallery;
 	}
@@ -156,6 +158,26 @@ class FBGallery
 				exit;
 			}
 		}
+	}
+	
+	function getPageId($string)
+	{
+		/**
+		* Checks to see if page id is vaild
+		*/
+		if(is_numeric($string)){$query_where = 'page_id';}
+		else{$query_where = 'username';}
+		$query = "SELECT page_id FROM page WHERE $query_where = '$string'";
+		$url = 'https://graph.facebook.com/fql?q='.rawurlencode($query);
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
+		curl_setopt($ch, CURLOPT_HEADER,0);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+		$return_data = curl_exec($ch);
+		$json_array = json_decode($return_data,true);
+		
+		if(isset($json_array['data'][0]['page_id'])){return $json_array['data'][0]['page_id'];}
+		else{die('invalid page id or name');}
 	}
 }
 ?>
