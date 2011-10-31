@@ -11,7 +11,7 @@
 	<link rel="stylesheet" href="css/stlyes.css"/>
 	<script type="text/javascript" charset="utf-8">
 	$(function () {
-		$("a[rel^='prettyPhoto']").prettyPhoto({theme: 'dark_rounded',social_tools: ''});
+		$("a[rel^='prettyPhoto']").prettyPhoto({theme: 'dark_rounded',social_tools: '',deeplinking: false});
 		
 		 
 		$("a[rel=twipsy]").twipsy({
