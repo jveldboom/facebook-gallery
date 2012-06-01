@@ -39,7 +39,6 @@ class FBGallery
 			else{$query = "SELECT aid,object_id,name,size,type FROM album WHERE owner = '$id' ORDER BY modified DESC";}
 			$url = 'https://graph.facebook.com/fql?q='.rawurlencode($query);
 			$ch = curl_init($url);
-			//curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
 			curl_setopt($ch, CURLOPT_HEADER,0);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
 			$return_data = curl_exec($ch);
@@ -176,7 +175,6 @@ class FBGallery
 		$query = "SELECT page_id FROM page WHERE $query_where = '$string'";
 		$url = 'https://graph.facebook.com/fql?q='.rawurlencode($query);
 		$ch = curl_init($url);
-		//curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
 		curl_setopt($ch, CURLOPT_HEADER,0);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
 		$return_data = curl_exec($ch);
