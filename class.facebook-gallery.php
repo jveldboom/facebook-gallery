@@ -60,13 +60,6 @@ class FBGallery
 		{
 			if(!empty($json_array['data'][$x]['object_id']) AND $json_array['data'][$x]['size'] > 0) // do not include empty albums
 			{
-				/*
-				$gallery .= '<li>
-									<a href="?id='.$json_array['data'][$x]['aid'].'&title='.urlencode($json_array['data'][$x]['name']).'" title="'.$json_array['data'][$x]['name'].' ('.$json_array['data'][$x]['size'].')" class="twipsies" rel="twipsy">
-										<span class="thumbnail"><i style="background-image:url(\'http://graph.facebook.com/'.$json_array['data'][$x]['object_id'].'/picture?type=album\');"></i></span>
-									</a>
-								</li>';
-				*/
 				$gallery .= '<li class="span2">
     							<a href="?id='.$json_array['data'][$x]['aid'].'&title='.urlencode($json_array['data'][$x]['name']).'" class="thumbnail" rel="tooltip" data-placement="bottom" title="'.$json_array['data'][$x]['name'].' ('.$json_array['data'][$x]['size'].')">
     							<img src="http://graph.facebook.com/'.$json_array['data'][$x]['object_id'].'/picture?type=album">
