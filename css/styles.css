@@ -1,13 +1,5 @@
-body {
-	padding-top: 50px;		
+.thumbnail img {
+	overflow: hidden;
+	height: 100px;
+	width: 100%;
 }
-.thumbnail i {
-	background-color: #EEEEEE;
-  	background-position: center 25%;
-  	background-repeat: no-repeat;
-  	display: block;
-	height: 116px;
-	width: 149px;
-}
-
-.media-grid {margin-left: 12px;} /* forces gallery to be centered */
