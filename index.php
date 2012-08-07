@@ -6,9 +6,9 @@
 	<script src="bootstrap/js/bootstrap-dropdown.js"></script>
 	<script src="bootstrap/js/bootstrap-tooltip.js"></script>
 	<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/styles.css"/>
 	<link rel="stylesheet" href="bootstrap/css/bootstrap-responsive.min.css">
 	<link rel="stylesheet" href="css/prettyPhoto.css"/>
-	<link rel="stylesheet" href="css/styles.css"/>
 	<script type="text/javascript" charset="utf-8">
 	$(function () {
 		$("a[rel^='prettyPhoto']").prettyPhoto({theme: 'dark_rounded',social_tools: '',deeplinking: false});
