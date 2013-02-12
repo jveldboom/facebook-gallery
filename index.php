@@ -41,13 +41,13 @@
 <!-- GALLERY -->
 <div class="container-fluid">
 	<?php
-	if(empty($_GET[fid])){$_GET[fid] = 'tacobell';} // force if empty for demo
+	if(empty($_GET['fid'])){$_GET['fid'] = 'tacobell';} // force if empty for demo
 	
 	require('class.facebook-gallery.php');
 	$cache = array('permission' => 'y',
 					'location' => 'cache', // ensure this directory has permission to read and write
 					'time' => 7200);
-	$gallery = new FBGallery($_GET[fid],'y',$cache);
+	$gallery = new FBGallery($_GET['fid'],'y',$cache);
 	?>
 </div>
 

@@ -20,11 +20,11 @@ class FBGallery
 		$this->breadcrumbs = $breadcrumbs;
 		$this->cache = $cache;
 
-		if(empty($_GET[id])){
+		if(empty($_GET['id'])){
 			echo $this->displayAlbums();
 		}
 		else{
-			echo $this->displayPhotos($_GET[id],$_GET[title]);
+			echo $this->displayPhotos($_GET['id'],$_GET['title']);
 		}
 	}
 	
@@ -52,7 +52,7 @@ class FBGallery
 	function displayAlbums()
 	{
 		$this->loadCache($this->id); // loads cached file
-		
+		$gallery = '';
 		$json_array = $this->getData($this->id,$type='albums');
 		$data_count = count($json_array['data']);
 		for($x=0; $x<$data_count; $x++)
@@ -118,6 +118,7 @@ class FBGallery
 		*
 		* $crumbs must be setup like array('parent title' => 'parent url','child title' => 'child array')
 		*/
+		$crumbs = '';
 		if(is_array($crumbs_array))
 		{
 			$divider = ' <span class="divider">/</span>';
