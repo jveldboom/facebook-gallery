@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<title>Facebook Gallery</title>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="js/jquery.prettyPhoto.js" type="text/javascript" charset="utf-8"></script>
 	<script src="bootstrap/js/bootstrap-dropdown.js"></script>
 	<script src="bootstrap/js/bootstrap-tooltip.js"></script>
