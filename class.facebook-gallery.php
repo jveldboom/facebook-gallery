@@ -37,7 +37,7 @@ class FBGallery
 		{
 			if($type == 'photos'){$query = "SELECT src,src_big,caption FROM photo WHERE aid = '$id'";}
 			else{$query = "SELECT aid,object_id,name,size,type FROM album WHERE owner = '$id' ORDER BY modified DESC";}
-			$url = 'https://graph.facebook.com/fql?q='.rawurlencode($query);
+			$url = 'https://graph.facebook.com/fql?q='.rawurlencode($query).'&format=json-strings';
 			$ch = curl_init($url);
 			curl_setopt($ch, CURLOPT_HEADER,0);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
@@ -174,7 +174,7 @@ class FBGallery
 		if(is_numeric($string)){$query_where = 'page_id';}
 		else{$query_where = 'username';}
 		$query = "SELECT page_id FROM page WHERE $query_where = '$string'";
-		$url = 'https://graph.facebook.com/fql?q='.rawurlencode($query);
+		$url = 'https://graph.facebook.com/fql?q='.rawurlencode($query).'&format=json-strings';
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_HEADER,0);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
