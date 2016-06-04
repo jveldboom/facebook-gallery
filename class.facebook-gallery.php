@@ -147,9 +147,32 @@ class FBGallery
 	{
 		if($this->cache['permission'] != 'n')
 		{
-			$fp = fopen($this->cache['location'].'/'.$id.'.html', 'w');
-			fwrite($fp, $html);
-			fclose($fp);
+			$fp = @fopen($this->cache['location'].'/'.$id.'.html', 'w');
+			if (false == $fp) {
+
+				$error_object = error_get_last();
+
+				//expected error_object contents
+				//                    Array
+				//                    (
+				//                        [type] => 8
+				//                        [message] => Undefined variable: a
+				//                        [file] => C:\WWW\index.php
+				//                        [line] => 2
+				//                        )
+
+				//Warning: fopen(cache/321662419491.html): failed to open stream: Permission denied in /_/facebook/album_display_stuff/facebook-gallery/class.facebook-gallery.php on line 150
+				$message  = 'message:' . $error_object['message'] . ' file:' . $error_object['file'] . ' line:' . $error_object['line'];
+				$message_type  = $error_object['type'];
+				error_log($message);
+
+				unset($message);
+				unset($message_type);
+			} else {
+				fwrite($fp, $html);
+				fclose($fp);
+			}
+
 		}
 	}
 	
@@ -169,7 +192,7 @@ class FBGallery
 	function getPageId($string)
 	{
 		/**
-		* Checks to see if page id is vaild
+		* Checks to see if page id is valid
 		*/
 		if(is_numeric($string)){$query_where = 'page_id';}
 		else{$query_where = 'username';}
