@@ -82,7 +82,7 @@ class FBGallery
 	function displayPhotos($album_id,$title='Photos')
 	{
 		$this->loadCache($album_id); // loads cached file
-		
+		$gallery = '';
 		$json_array = $this->getData($album_id,$type='photos');
 		$data_count = count($json_array['data']);
 		if($data_count > 0)
