@@ -48,6 +48,7 @@
 					'location' => 'cache', // ensure this directory has permission to read and write
 					'time' => 7200);
 	$gallery = new FBGallery($_GET['fid'],'y',$cache);
+	echo $gallery->display();
 	?>
 </div>
 
