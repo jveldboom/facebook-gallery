@@ -44,10 +44,20 @@
 	if(empty($_GET['fid'])){$_GET['fid'] = 'tacobell';} // force if empty for demo
 	
 	require('class.facebook-gallery.php');
-	$cache = array('permission' => 'y',
-					'location' => 'cache', // ensure this directory has permission to read and write
-					'time' => 7200);
-	$gallery = new FBGallery($_GET['fid'],'y',$cache);
+
+	$config = array(
+		'page_name' => $_GET['fid'],
+		'app_id' => '{YOUR APP ID}',
+		'app_secret' => '{YOUR APP SECRET}',
+		'breadcrumbs' => true,
+		'cache' => array(
+			'permission' => 'y',
+			'location' => 'cache', // ensure this directory has permission to read and write
+			'time' => 7200
+		)
+	);
+
+	$gallery = new FBGallery($config);
 	echo $gallery->display();
 	?>
 </div>
