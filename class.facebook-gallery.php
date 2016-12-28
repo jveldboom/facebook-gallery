@@ -168,7 +168,8 @@ class FBGallery
         if($this->cache) {
             $cache_file = $this->cache['location'].'/'.$id.'.html';
             if(file_exists($cache_file) AND filemtime($cache_file) > (date("U") - $this->cache['time'])) {
-                return include $cache_file;
+                return file_get_contents($cache_file);
+
             }
         }
 
