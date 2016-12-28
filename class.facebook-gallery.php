@@ -25,25 +25,30 @@ class FBGallery
 
 	public function display(){
 
-        if(empty($_GET['id'])){
-            return $this->displayAlbums();
-        }
-        else{
+        try{
+            if(empty($_GET['id'])){
+                return $this->displayAlbums();
+            }
+
             return $this->displayPhotos($_GET['id'],$_GET['title']);
+
+        } catch(Exception $e){
+            return 'Unable to display gallery due to the following error: '.$e->getMessage();
         }
     }
 
     /**
      * Sends each request Facebook (currently only for 'albums' and 'photos')
      *
-     * @param $album_id string
+     * @param string $album_id
      * @param string $type
-     * @return mixed|string
+     * @return mixed
+     * @throws Exception
      */
 	private function getData($album_id='',$type='')
 	{
 		if($type == 'photos'){
-            $url = 'https://graph.facebook.com/'.$album_id.'/photos?access_token='.$this->access_token.'&fields=id,picture,images,caption';
+            $url = 'https://graph.facebook.com/'.$album_id.'/photos?access_token='.$this->access_token.'&fields=id,picture,source,images,caption';
         } else {
             $url = 'https://graph.facebook.com/'.$this->page_name.'/albums?access_token='.$this->access_token;
         }
@@ -52,44 +57,49 @@ class FBGallery
         curl_setopt($ch, CURLOPT_HEADER,0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
         $return_data = curl_exec($ch);
+
         $json_array = json_decode($return_data,true);
+        if(isset($json_array['error'])){
+            throw new Exception($json_array['error']['message']);
+        }
 
         return $json_array;
 	}
 
     private function displayAlbums()
     {
-        //$this->loadCache($this->id); // loads cached file
+        $cache = $this->getCache($this->page_name); // loads cached file
+        if($cache) return $cache;
+
         $gallery = '';
         $albums = $this->getData($this->page_name,$type='albums');
 
-        foreach($albums['data'] as $album)
-        {
-            if($album['count'] > 0) // do not include empty albums
-            {
-                $gallery .= '<li class="span2">
+        foreach($albums['data'] as $album){
+            if($album['count'] > 0) {
+                $gallery .= '<div class="col-lg-2 col-sm-3 col-xs-6">
     							<a href="?id='.$album['id'].'&title='.urlencode($album['name']).'" class="thumbnail" rel="tooltip" data-placement="bottom" title="'.$album['name'].' ('.$album['count'].')">
-    							<img src="http://graph.facebook.com/'.$album['cover_photo'].'/picture?type=album">
+    							    <img src="http://graph.facebook.com/'.$album['cover_photo'].'/picture?type=album">
     							</a>
-  							</li>';
+  							</div>';
             }
         }
 
         $gallery = '<ul class="thumbnails">'.$gallery.'</ul>';
 
-        if($this->breadcrumbs != 'n'){
+        if($this->breadcrumbs){
             $crumbs = array('Gallery' => $_SERVER['PHP_SELF']);
             $gallery = $this->addBreadCrumbs($crumbs).$gallery;
         }
 
-        $this->saveCache($this->id,$gallery); // saves cached HTML file
+        $this->saveCache($this->page_name,$gallery); // saves cached HTML file
 
         return $gallery;
     }
 
     private function displayPhotos($album_id,$title='Photos')
     {
-        $this->loadCache($album_id); // loads cached file
+        $cache = $this->getCache($album_id); // loads cached file
+        if($cache) return $cache;
 
         $photos = $this->getData($album_id,$type='photos');
         if(count($photos) == 0) return 'No photos in this gallery';
@@ -97,18 +107,15 @@ class FBGallery
         $gallery = '';
         foreach($photos['data'] as $photo)
         {
-            $gallery .= '<li>
-                            <a href="'.$photo['picture'].'" rel="prettyPhoto['.$album_id.']" title="" class="thumbnail">
-                            <img src="'.$photo['picture'].'">
+            $gallery .= '<div class="col-lg-2 col-sm-3 col-xs-6">
+                            <a href="'.$photo['source'].'" rel="prettyPhoto['.$album_id.']" title="" class="thumbnail">
+                                <img src="'.$photo['picture'].'">
                             </a>
-                        </li>';
+                        </div>';
         }
 
-        $gallery = '<ul class="thumbnails">'.$gallery.'</ul>';
-
-        if($this->breadcrumbs != 'n'){
-            $crumbs = array('Gallery' => $_SERVER['PHP_SELF'],
-                $title => '');
+        if($this->breadcrumbs){
+            $crumbs = array('Gallery' => $_SERVER['PHP_SELF'],  $title => '');
             $gallery = $this->addBreadCrumbs($crumbs).$gallery;
         }
 
@@ -127,24 +134,13 @@ class FBGallery
     private function addBreadCrumbs($crumbs_array)
     {
         $crumbs = '';
-        if(is_array($crumbs_array))
-        {
-            $divider = ' <span class="divider">/</span>';
-            $count = count($crumbs_array);
-            if($count <= 1){$divider = '';} // only one crumb to display so no divider
-            $counter = 1;
-            foreach($crumbs_array as $title => $url)
-            {
-                if($count == $counter){$divider = '';} // removed divider from last crumb
-                $crumbs .= '<li><a href="'.$url.'">'.stripslashes($title).'</a>'.$divider.'</li>';
-                ++$counter;
+        if(is_array($crumbs_array)){
+            foreach($crumbs_array as $title => $url){
+                $crumbs .= '<li><a href="'.$url.'">'.stripslashes($title).'</a></li>';
             }
 
-            return '<ul class="breadcrumb">
-							'.$crumbs.'
-						</ul>';
+            return '<ol class="breadcrumb">'.$crumbs.'</ol>';
         }
-        // else simple return nothing
     }
 
 
@@ -153,19 +149,12 @@ class FBGallery
     ##---------------------------
     private function saveCache($id,$html)
     {
-        if($this->cache['permission'])
+        if($this->cache && is_writable($this->cache['location']))
         {
             $fp = @fopen($this->cache['location'].'/'.$id.'.html', 'w');
             if (false == $fp) {
-
-                $error_object = error_get_last();
-
-                $message  = 'message:' . $error_object['message'] . ' file:' . $error_object['file'] . ' line:' . $error_object['line'];
-                $message_type  = $error_object['type'];
-                error_log($message);
-
-                unset($message);
-                unset($message_type);
+                $error = error_get_last();
+                throw new Exception('Unable to save cache due to '.$error['message']);
             } else {
                 fwrite($fp, $html);
                 fclose($fp);
@@ -174,16 +163,15 @@ class FBGallery
         }
     }
 
-    private function loadCache($id)
+    private function getCache($id)
     {
-        if($this->cache['permission'] != 'n')
-        {
+        if($this->cache) {
             $cache_file = $this->cache['location'].'/'.$id.'.html';
-            if(file_exists($cache_file) AND filemtime($cache_file) > (date("U") - $this->cache['time']))
-            {
-                require($cache_file);
-                exit;
+            if(file_exists($cache_file) AND filemtime($cache_file) > (date("U") - $this->cache['time'])) {
+                return include $cache_file;
             }
         }
+
+        return false;
     }
 }
