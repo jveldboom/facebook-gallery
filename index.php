@@ -44,9 +44,9 @@
 
                 <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">example galleries <b class="caret"></b></a>
                     <ul class="dropdown-menu">
-                        <li><a href="?fid=tacobell">Taco Bell</a></li>
-                        <li><a href="?fid=XGames">X Games</a></li>
-                        <li><a href="?fid=googlechrome">Google Chrome</a></li>
+                        <li><a href="?fid=Threadless">Threadless</a></li>
+                        <li><a href="?fid=Adobe">Adobe</a></li>
+                        <li><a href="?fid=Starbucks">Starbucks</a></li>
                     </ul>
                 </li>
             </ul>
