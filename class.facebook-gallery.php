@@ -110,7 +110,7 @@ class FBGallery
         {
             $gallery .= '<div class="col-lg-2 col-sm-3 col-xs-6">
                             <a href="'.$photo['source'].'" rel="prettyPhoto['.$album_id.']" title="" class="thumbnail">
-                                <img src="'.$photo['picture'].'">
+                                <img src="http://graph.facebook.com/'.$photo['id'].'/picture?type=normal">
                             </a>
                         </div>';
         }
