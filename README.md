@@ -28,7 +28,7 @@ $config = array(
     'app_secret' => '{YOUR APP SECRET}',    // Same as app_id
     'breadcrumbs' => true,                  // Displays bread crumbs at top
     'cache' => array(
-        'location' => 'cache',              // Relative directory, PHP must have read/write access. (755 or 775)
+        'location' => 'cache',              // Directory to save cache files - PHP must have read/write access. (755 or 775)
         'time' => 7200                      // Number of seconds to keep cache
     )
 );
