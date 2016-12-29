@@ -12,7 +12,7 @@ class FBGallery
         $this->fb = new \Facebook\Facebook([
             'app_id' => $config['app_id'],
             'app_secret' => $config['app_secret'],
-            'default_graph_version' => 'v2.5'
+            'default_graph_version' => 'v2.8'
         ]);
 
         $this->access_token = $this->fb->getApp()->getAccessToken();
@@ -48,7 +48,8 @@ class FBGallery
 	private function getData($album_id='',$type='')
 	{
 		if($type == 'photos'){
-            $url = 'https://graph.facebook.com/'.$album_id.'/photos?access_token='.$this->access_token.'&limit=100&fields=id,picture,source,images,caption';
+            $url = 'https://graph.facebook.com/'.$album_id.'/photos?access_token='.$this->access_token.'&limit=100&fields=id,picture,source';
+
         } else {
             $url = 'https://graph.facebook.com/'.$this->page_name.'/albums?access_token='.$this->access_token.'&limit=100&fields=id,name,cover_photo,count';
         }
