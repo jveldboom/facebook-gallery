@@ -48,10 +48,10 @@ class FBGallery
 	private function getData($album_id='',$type='')
 	{
 		if($type == 'photos'){
-            $url = 'https://graph.facebook.com/'.$album_id.'/photos?access_token='.$this->access_token.'&limit=100&fields=id,picture,source';
+            $url = 'https://graph.facebook.com/v2.8/'.$album_id.'/photos?access_token='.$this->access_token.'&limit=100&fields=id,picture,source';
 
         } else {
-            $url = 'https://graph.facebook.com/'.$this->page_name.'/albums?access_token='.$this->access_token.'&limit=100&fields=id,name,cover_photo,count';
+            $url = 'https://graph.facebook.com/v2.8/'.$this->page_name.'/albums?access_token='.$this->access_token.'&limit=100&fields=id,name,cover_photo,count';
         }
 
         $ch = curl_init($url);
@@ -79,7 +79,7 @@ class FBGallery
             if($album['count'] > 0) {
                 $gallery .= '<div class="col-lg-2 col-sm-3 col-xs-6">
     							<a href="?id='.$album['id'].'&title='.urlencode($album['name']).'" class="thumbnail" rel="tooltip" data-placement="bottom" title="'.$album['name'].' ('.$album['count'].')">
-    							    <img src="http://graph.facebook.com/'.$album['cover_photo'].'/picture?type=album">
+    							    <img src="http://graph.facebook.com/'.$album['cover_photo']['id'].'/picture?type=normal">
     							</a>
   							</div>';
             }
