@@ -7,8 +7,7 @@ class FBGallery
      * FBGallery constructor.
      * @param $config array
      */
-    public function __construct($config)
-	{
+    public function __construct($config) {
         $this->fb = new \Facebook\Facebook([
             'app_id' => $config['app_id'],
             'app_secret' => $config['app_secret'],
@@ -19,12 +18,11 @@ class FBGallery
         $this->fb->setDefaultAccessToken( $this->access_token );
 
         $this->page_name = $config['page_name'];
-		$this->breadcrumbs = $config['breadcrumbs'];
-		$this->cache = $config['cache'];
-	}
+        $this->breadcrumbs = $config['breadcrumbs'];
+        $this->cache = $config['cache'];
+    }
 
-	public function display(){
-
+    public function display(){
         try{
             if(empty($_GET['id'])){
                 return $this->displayAlbums();
@@ -45,9 +43,8 @@ class FBGallery
      * @return mixed
      * @throws Exception
      */
-	private function getData($album_id='',$type='')
-	{
-		if($type == 'photos'){
+    private function getData($album_id='',$type=''){
+        if($type == 'photos'){
             $url = 'https://graph.facebook.com/v2.8/'.$album_id.'/photos?access_token='.$this->access_token.'&limit=100&fields=id,picture,source';
 
         } else {
@@ -65,10 +62,9 @@ class FBGallery
         }
 
         return $json_array;
-	}
+    }
 
-    private function displayAlbums()
-    {
+    private function displayAlbums(){
         $cache = $this->getCache($this->page_name); // loads cached file
         if($cache) return $cache;
 
@@ -78,10 +74,10 @@ class FBGallery
         foreach($albums['data'] as $album){
             if($album['count'] > 0) {
                 $gallery .= '<div class="col-lg-2 col-sm-3 col-xs-6">
-    							<a href="?id='.$album['id'].'&title='.urlencode($album['name']).'" class="thumbnail" rel="tooltip" data-placement="bottom" title="'.$album['name'].' ('.$album['count'].')">
-    							    <img src="http://graph.facebook.com/'.$album['cover_photo']['id'].'/picture?type=normal">
-    							</a>
-  							</div>';
+                                <a href="?id='.$album['id'].'&title='.urlencode($album['name']).'" class="thumbnail" rel="tooltip" data-placement="bottom" title="'.$album['name'].' ('.$album['count'].')">
+                                    <img src="http://graph.facebook.com/'.$album['cover_photo']['id'].'/picture?type=normal">
+                                </a>
+                            </div>';
             }
         }
 
@@ -97,8 +93,7 @@ class FBGallery
         return $gallery;
     }
 
-    private function displayPhotos($album_id,$title='Photos')
-    {
+    private function displayPhotos($album_id,$title='Photos'){
         $cache = $this->getCache($album_id); // loads cached file
         if($cache) return $cache;
 
@@ -132,8 +127,7 @@ class FBGallery
      * @param $crumbs_array
      * @return string
      */
-    private function addBreadCrumbs($crumbs_array)
-    {
+    private function addBreadCrumbs($crumbs_array){
         $crumbs = '';
         if(is_array($crumbs_array)){
             foreach($crumbs_array as $title => $url){
@@ -148,8 +142,7 @@ class FBGallery
     ##---------------------------
     ## CACHE
     ##---------------------------
-    private function saveCache($id,$html)
-    {
+    private function saveCache($id,$html){
         if($this->cache && is_writable($this->cache['location']))
         {
             $fp = @fopen($this->cache['location'].'/'.$id.'.html', 'w');
@@ -164,8 +157,7 @@ class FBGallery
         }
     }
 
-    private function getCache($id)
-    {
+    private function getCache($id){
         if($this->cache) {
             $cache_file = $this->cache['location'].'/'.$id.'.html';
             if(file_exists($cache_file) AND filemtime($cache_file) > (date("U") - $this->cache['time'])) {
