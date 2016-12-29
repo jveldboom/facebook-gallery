@@ -48,9 +48,9 @@ class FBGallery
 	private function getData($album_id='',$type='')
 	{
 		if($type == 'photos'){
-            $url = 'https://graph.facebook.com/'.$album_id.'/photos?access_token='.$this->access_token.'&fields=id,picture,source,images,caption';
+            $url = 'https://graph.facebook.com/'.$album_id.'/photos?access_token='.$this->access_token.'&limit=100&fields=id,picture,source,images,caption';
         } else {
-            $url = 'https://graph.facebook.com/'.$this->page_name.'/albums?access_token='.$this->access_token.'&fields=id,name,cover_photo,count';
+            $url = 'https://graph.facebook.com/'.$this->page_name.'/albums?access_token='.$this->access_token.'&limit=100&fields=id,name,cover_photo,count';
         }
 
         $ch = curl_init($url);
