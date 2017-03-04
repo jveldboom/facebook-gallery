@@ -19,6 +19,7 @@ This gallery will allow you update your photos in one place and have them displa
 Setup
 -----
 
+- Requires PHP 5.6+
 - You will first need to create a Facebook app to obtain an App ID and App Secret. [Facebook Developers](https://developers.facebook.com/apps/)
 - Next update the `index.php` config values to fit your needs:
 ```php
