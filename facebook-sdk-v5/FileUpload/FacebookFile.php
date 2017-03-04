@@ -1,14 +1,14 @@
 <?php
 /**
- * Copyright 2014 facebook-sdk-v5, Inc.
+ * Copyright 2017 Facebook, Inc.
  *
  * You are hereby granted a non-exclusive, worldwide, royalty-free license to
  * use, copy, modify, and distribute this software in source code or binary
  * form for use in connection with the web services and APIs provided by
- * facebook-sdk-v5.
+ * Facebook.
  *
- * As with any software that integrates with the facebook-sdk-v5 platform, your use
- * of this software is subject to the facebook-sdk-v5 Developer Principles and
+ * As with any software that integrates with the Facebook platform, your use
+ * of this software is subject to the Facebook Developer Principles and
  * Policies [http://developers.facebook.com/policy/]. This copyright notice
  * shall be included in all copies or substantial portions of the software.
  *
@@ -28,7 +28,7 @@ use Facebook\Exceptions\FacebookSDKException;
 /**
  * Class FacebookFile
  *
- * @package facebook-sdk-v5
+ * @package Facebook
  */
 class FacebookFile
 {
@@ -36,6 +36,16 @@ class FacebookFile
      * @var string The path to the file on the system.
      */
     protected $path;
+
+    /**
+     * @var int The maximum bytes to read. Defaults to -1 (read all the remaining buffer).
+     */
+    private $maxLength;
+
+    /**
+     * @var int Seek to the specified offset before reading. If this number is negative, no seeking will occur and reading will start from the current position.
+     */
+    private $offset;
 
     /**
      * @var resource The stream pointing to the file.
@@ -46,12 +56,16 @@ class FacebookFile
      * Creates a new FacebookFile entity.
      *
      * @param string $filePath
+     * @param int $maxLength
+     * @param int $offset
      *
      * @throws FacebookSDKException
      */
-    public function __construct($filePath)
+    public function __construct($filePath, $maxLength = -1, $offset = -1)
     {
         $this->path = $filePath;
+        $this->maxLength = $maxLength;
+        $this->offset = $offset;
         $this->open();
     }
 
@@ -98,7 +112,7 @@ class FacebookFile
      */
     public function getContents()
     {
-        return stream_get_contents($this->stream);
+        return stream_get_contents($this->stream, $this->maxLength, $this->offset);
     }
 
     /**
@@ -109,6 +123,26 @@ class FacebookFile
     public function getFileName()
     {
         return basename($this->path);
+    }
+
+    /**
+     * Return the path of the file.
+     *
+     * @return string
+     */
+    public function getFilePath()
+    {
+        return $this->path;
+    }
+
+    /**
+     * Return the size of the file.
+     *
+     * @return int
+     */
+    public function getSize()
+    {
+        return filesize($this->path);
     }
 
     /**

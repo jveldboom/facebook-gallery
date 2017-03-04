@@ -1,14 +1,14 @@
 <?php
 /**
- * Copyright 2014 facebook-sdk-v5, Inc.
+ * Copyright 2017 Facebook, Inc.
  *
  * You are hereby granted a non-exclusive, worldwide, royalty-free license to
  * use, copy, modify, and distribute this software in source code or binary
  * form for use in connection with the web services and APIs provided by
- * facebook-sdk-v5.
+ * Facebook.
  *
- * As with any software that integrates with the facebook-sdk-v5 platform, your use
- * of this software is subject to the facebook-sdk-v5 Developer Principles and
+ * As with any software that integrates with the Facebook platform, your use
+ * of this software is subject to the Facebook Developer Principles and
  * Policies [http://developers.facebook.com/policy/]. This copyright notice
  * shall be included in all copies or substantial portions of the software.
  *
@@ -30,7 +30,7 @@ use Facebook\Exceptions\FacebookSDKException;
 /**
  * Class FacebookResponse
  *
- * @package facebook-sdk-v5
+ * @package Facebook
  */
 class FacebookResponse
 {
@@ -179,7 +179,7 @@ class FacebookResponse
      */
     public function getGraphVersion()
     {
-        return isset($this->headers['facebook-sdk-v5-API-Version']) ? $this->headers['facebook-sdk-v5-API-Version'] : null;
+        return isset($this->headers['Facebook-API-Version']) ? $this->headers['Facebook-API-Version'] : null;
     }
 
     /**
@@ -213,7 +213,7 @@ class FacebookResponse
     /**
      * Returns the exception that was thrown for this request.
      *
-     * @return FacebookSDKException|null
+     * @return FacebookResponseException|null
      */
     public function getThrownException()
     {
@@ -225,7 +225,7 @@ class FacebookResponse
      *
      * Graph will return 2 types of responses:
      * - JSON(P)
-     *    Most responses from Grpah are JSON(P)
+     *    Most responses from Graph are JSON(P)
      * - application/x-www-form-urlencoded key/value pairs
      *    Happens on the `/oauth/access_token` endpoint when exchanging
      *    a short-lived access token for a long-lived access token
@@ -259,7 +259,7 @@ class FacebookResponse
     /**
      * Instantiate a new GraphObject from response.
      *
-     * @param string|null $subclassName The GraphNode sub class to cast to.
+     * @param string|null $subclassName The GraphNode subclass to cast to.
      *
      * @return \Facebook\GraphNodes\GraphObject
      *
@@ -276,7 +276,7 @@ class FacebookResponse
     /**
      * Instantiate a new GraphNode from response.
      *
-     * @param string|null $subclassName The GraphNode sub class to cast to.
+     * @param string|null $subclassName The GraphNode subclass to cast to.
      *
      * @return \Facebook\GraphNodes\GraphNode
      *
@@ -376,7 +376,7 @@ class FacebookResponse
     /**
      * Instantiate a new GraphList from response.
      *
-     * @param string|null $subclassName The GraphNode sub class to cast list items to.
+     * @param string|null $subclassName The GraphNode subclass to cast list items to.
      * @param boolean     $auto_prefix  Toggle to auto-prefix the subclass name.
      *
      * @return \Facebook\GraphNodes\GraphList
@@ -394,7 +394,7 @@ class FacebookResponse
     /**
      * Instantiate a new GraphEdge from response.
      *
-     * @param string|null $subclassName The GraphNode sub class to cast list items to.
+     * @param string|null $subclassName The GraphNode subclass to cast list items to.
      * @param boolean     $auto_prefix  Toggle to auto-prefix the subclass name.
      *
      * @return \Facebook\GraphNodes\GraphEdge

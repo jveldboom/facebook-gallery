@@ -1,14 +1,14 @@
 <?php
 /**
- * Copyright 2014 facebook-sdk-v5, Inc.
+ * Copyright 2017 Facebook, Inc.
  *
  * You are hereby granted a non-exclusive, worldwide, royalty-free license to
  * use, copy, modify, and distribute this software in source code or binary
  * form for use in connection with the web services and APIs provided by
- * facebook-sdk-v5.
+ * Facebook.
  *
- * As with any software that integrates with the facebook-sdk-v5 platform, your use
- * of this software is subject to the facebook-sdk-v5 Developer Principles and
+ * As with any software that integrates with the Facebook platform, your use
+ * of this software is subject to the Facebook Developer Principles and
  * Policies [http://developers.facebook.com/policy/]. This copyright notice
  * shall be included in all copies or substantial portions of the software.
  *
@@ -26,7 +26,7 @@ namespace Facebook\GraphNodes;
 /**
  * Class GraphNode
  *
- * @package facebook-sdk-v5
+ * @package Facebook
  */
 class GraphNode extends Collection
 {
@@ -62,10 +62,11 @@ class GraphNode extends Collection
         foreach ($data as $k => $v) {
             if ($this->shouldCastAsDateTime($k)
                 && (is_numeric($v)
-                    || $k === 'birthday'
                     || $this->isIso8601DateString($v))
             ) {
                 $items[$k] = $this->castToDateTime($v);
+            } elseif ($k === 'birthday') {
+                $items[$k] = $this->castToBirthday($v);
             } else {
                 $items[$k] = $v;
             }
@@ -149,7 +150,6 @@ class GraphNode extends Collection
             'backdated_time',
             'issued_at',
             'expires_at',
-            'birthday',
             'publish_time'
         ], true);
     }
@@ -171,6 +171,18 @@ class GraphNode extends Collection
         }
 
         return $dt;
+    }
+
+    /**
+     * Casts a birthday value from Graph to Birthday
+     *
+     * @param string $value
+     *
+     * @return Birthday
+     */
+    public function castToBirthday($value)
+    {
+        return new Birthday($value);
     }
 
     /**

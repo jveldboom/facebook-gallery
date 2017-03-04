@@ -1,14 +1,14 @@
 <?php
 /**
- * Copyright 2014 facebook-sdk-v5, Inc.
+ * Copyright 2017 Facebook, Inc.
  *
  * You are hereby granted a non-exclusive, worldwide, royalty-free license to
  * use, copy, modify, and distribute this software in source code or binary
  * form for use in connection with the web services and APIs provided by
- * facebook-sdk-v5.
+ * Facebook.
  *
- * As with any software that integrates with the facebook-sdk-v5 platform, your use
- * of this software is subject to the facebook-sdk-v5 Developer Principles and
+ * As with any software that integrates with the Facebook platform, your use
+ * of this software is subject to the Facebook Developer Principles and
  * Policies [http://developers.facebook.com/policy/]. This copyright notice
  * shall be included in all copies or substantial portions of the software.
  *
@@ -29,7 +29,7 @@ namespace Facebook\HttpClients;
  * Abstraction for the procedural stream elements so that the functions can be
  * mocked and the implementation can be tested.
  *
- * @package facebook-sdk-v5
+ * @package Facebook
  */
 class FacebookStream
 {
@@ -41,7 +41,7 @@ class FacebookStream
     /**
      * @var array Response headers from the stream wrapper
      */
-    protected $responseHeaders;
+    protected $responseHeaders = [];
 
     /**
      * Make a new context stream reference instance
@@ -56,7 +56,7 @@ class FacebookStream
     /**
      * The response headers from the stream wrapper
      *
-     * @return array|null
+     * @return array
      */
     public function getResponseHeaders()
     {
@@ -73,7 +73,7 @@ class FacebookStream
     public function fileGetContents($url)
     {
         $rawResponse = file_get_contents($url, false, $this->stream);
-        $this->responseHeaders = $http_response_header;
+        $this->responseHeaders = $http_response_header ?: [];
 
         return $rawResponse;
     }

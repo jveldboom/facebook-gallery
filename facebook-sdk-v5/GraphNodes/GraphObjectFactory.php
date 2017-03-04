@@ -1,14 +1,14 @@
 <?php
 /**
- * Copyright 2014 facebook-sdk-v5, Inc.
+ * Copyright 2017 Facebook, Inc.
  *
  * You are hereby granted a non-exclusive, worldwide, royalty-free license to
  * use, copy, modify, and distribute this software in source code or binary
  * form for use in connection with the web services and APIs provided by
- * facebook-sdk-v5.
+ * Facebook.
  *
- * As with any software that integrates with the facebook-sdk-v5 platform, your use
- * of this software is subject to the facebook-sdk-v5 Developer Principles and
+ * As with any software that integrates with the Facebook platform, your use
+ * of this software is subject to the Facebook Developer Principles and
  * Policies [http://developers.facebook.com/policy/]. This copyright notice
  * shall be included in all copies or substantial portions of the software.
  *
@@ -23,10 +23,12 @@
  */
 namespace Facebook\GraphNodes;
 
+use Facebook\Exceptions\FacebookSDKException;
+
 /**
  * Class GraphObjectFactory
  *
- * @package facebook-sdk-v5
+ * @package Facebook
  *
  * @deprecated 5.0.0 GraphObjectFactory has been renamed to GraphNodeFactory
  * @todo v6: Remove this class
@@ -56,7 +58,7 @@ class GraphObjectFactory extends GraphNodeFactory
     {
         return $this->makeGraphNode($subclassName);
     }
-    
+
     /**
      * Convenience method for creating a GraphEvent collection.
      *
@@ -66,7 +68,7 @@ class GraphObjectFactory extends GraphNodeFactory
      */
     public function makeGraphEvent()
     {
-        return $this->makeGraphObject(static::BASE_GRAPH_OBJECT_PREFIX . 'GraphEvent');
+        return $this->makeGraphNode(static::BASE_GRAPH_OBJECT_PREFIX . 'GraphEvent');
     }
 
     /**
