@@ -1,14 +1,14 @@
 <?php
 /**
- * Copyright 2014 facebook-sdk-v5, Inc.
+ * Copyright 2017 Facebook, Inc.
  *
  * You are hereby granted a non-exclusive, worldwide, royalty-free license to
  * use, copy, modify, and distribute this software in source code or binary
  * form for use in connection with the web services and APIs provided by
- * facebook-sdk-v5.
+ * Facebook.
  *
- * As with any software that integrates with the facebook-sdk-v5 platform, your use
- * of this software is subject to the facebook-sdk-v5 Developer Principles and
+ * As with any software that integrates with the Facebook platform, your use
+ * of this software is subject to the Facebook Developer Principles and
  * Policies [http://developers.facebook.com/policy/]. This copyright notice
  * shall be included in all copies or substantial portions of the software.
  *
@@ -29,11 +29,13 @@
  */
 
 if (version_compare(PHP_VERSION, '5.4.0', '<')) {
-    throw new Exception('The facebook-sdk-v5 SDK requires PHP version 5.4 or higher.');
+    throw new Exception('The Facebook SDK requires PHP version 5.4 or higher.');
 }
 
+require_once __DIR__ . '/polyfills.php';
+
 /**
- * Register the autoloader for the facebook-sdk-v5 SDK classes.
+ * Register the autoloader for the Facebook SDK classes.
  *
  * Based off the official PSR-4 autoloader example found here:
  * https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader-examples.md
@@ -44,7 +46,7 @@ if (version_compare(PHP_VERSION, '5.4.0', '<')) {
  */
 spl_autoload_register(function ($class) {
     // project-specific namespace prefix
-    $prefix = 'facebook-sdk-v5\\';
+    $prefix = 'Facebook\\';
 
     // For backwards compatibility
     $customBaseDir = '';

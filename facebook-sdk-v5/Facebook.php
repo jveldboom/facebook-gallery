@@ -1,14 +1,14 @@
 <?php
 /**
- * Copyright 2014 facebook-sdk-v5, Inc.
+ * Copyright 2017 Facebook, Inc.
  *
  * You are hereby granted a non-exclusive, worldwide, royalty-free license to
  * use, copy, modify, and distribute this software in source code or binary
  * form for use in connection with the web services and APIs provided by
- * facebook-sdk-v5.
+ * Facebook.
  *
- * As with any software that integrates with the facebook-sdk-v5 platform, your use
- * of this software is subject to the facebook-sdk-v5 Developer Principles and
+ * As with any software that integrates with the Facebook platform, your use
+ * of this software is subject to the Facebook Developer Principles and
  * Policies [http://developers.facebook.com/policy/]. This copyright notice
  * shall be included in all copies or substantial portions of the software.
  *
@@ -26,21 +26,17 @@ namespace Facebook;
 use Facebook\Authentication\AccessToken;
 use Facebook\Authentication\OAuth2Client;
 use Facebook\FileUpload\FacebookFile;
+use Facebook\FileUpload\FacebookResumableUploader;
+use Facebook\FileUpload\FacebookTransferChunk;
 use Facebook\FileUpload\FacebookVideo;
 use Facebook\GraphNodes\GraphEdge;
 use Facebook\Url\UrlDetectionInterface;
 use Facebook\Url\FacebookUrlDetectionHandler;
+use Facebook\PseudoRandomString\PseudoRandomStringGeneratorFactory;
 use Facebook\PseudoRandomString\PseudoRandomStringGeneratorInterface;
-use Facebook\PseudoRandomString\McryptPseudoRandomStringGenerator;
-use Facebook\PseudoRandomString\OpenSslPseudoRandomStringGenerator;
-use Facebook\PseudoRandomString\UrandomPseudoRandomStringGenerator;
-use Facebook\HttpClients\FacebookHttpClientInterface;
-use Facebook\HttpClients\FacebookCurlHttpClient;
-use Facebook\HttpClients\FacebookStreamHttpClient;
-use Facebook\HttpClients\FacebookGuzzleHttpClient;
+use Facebook\HttpClients\HttpClientsFactory;
+use Facebook\PersistentData\PersistentDataFactory;
 use Facebook\PersistentData\PersistentDataInterface;
-use Facebook\PersistentData\FacebookSessionPersistentDataHandler;
-use Facebook\PersistentData\FacebookMemoryPersistentDataHandler;
 use Facebook\Helpers\FacebookCanvasHelper;
 use Facebook\Helpers\FacebookJavaScriptHelper;
 use Facebook\Helpers\FacebookPageTabHelper;
@@ -48,21 +44,21 @@ use Facebook\Helpers\FacebookRedirectLoginHelper;
 use Facebook\Exceptions\FacebookSDKException;
 
 /**
- * Class facebook-sdk-v5
+ * Class Facebook
  *
- * @package facebook-sdk-v5
+ * @package Facebook
  */
 class Facebook
 {
     /**
-     * @const string Version number of the facebook-sdk-v5 PHP SDK.
+     * @const string Version number of the Facebook PHP SDK.
      */
-    const VERSION = '5.0.0';
+    const VERSION = '5.4.4';
 
     /**
      * @const string Default Graph API version for requests.
      */
-    const DEFAULT_GRAPH_VERSION = 'v2.4';
+    const DEFAULT_GRAPH_VERSION = 'v2.8';
 
     /**
      * @const string The name of the environment variable that contains the app ID.
@@ -80,7 +76,7 @@ class Facebook
     protected $app;
 
     /**
-     * @var FacebookClient The facebook-sdk-v5 client service.
+     * @var FacebookClient The Facebook client service.
      */
     protected $client;
 
@@ -120,7 +116,7 @@ class Facebook
     protected $lastResponse;
 
     /**
-     * Instantiates a new facebook-sdk-v5 super-class object.
+     * Instantiates a new Facebook super-class object.
      *
      * @param array $config
      *
@@ -128,80 +124,43 @@ class Facebook
      */
     public function __construct(array $config = [])
     {
-        $appId = isset($config['app_id']) ? $config['app_id'] : getenv(static::APP_ID_ENV_NAME);
-        if (!$appId) {
+        $config = array_merge([
+            'app_id' => getenv(static::APP_ID_ENV_NAME),
+            'app_secret' => getenv(static::APP_SECRET_ENV_NAME),
+            'default_graph_version' => static::DEFAULT_GRAPH_VERSION,
+            'enable_beta_mode' => false,
+            'http_client_handler' => null,
+            'persistent_data_handler' => null,
+            'pseudo_random_string_generator' => null,
+            'url_detection_handler' => null,
+        ], $config);
+
+        if (!$config['app_id']) {
             throw new FacebookSDKException('Required "app_id" key not supplied in config and could not find fallback environment variable "' . static::APP_ID_ENV_NAME . '"');
         }
-
-        $appSecret = isset($config['app_secret']) ? $config['app_secret'] : getenv(static::APP_SECRET_ENV_NAME);
-        if (!$appSecret) {
+        if (!$config['app_secret']) {
             throw new FacebookSDKException('Required "app_secret" key not supplied in config and could not find fallback environment variable "' . static::APP_SECRET_ENV_NAME . '"');
         }
 
-        $this->app = new FacebookApp($appId, $appSecret);
-
-        $httpClientHandler = null;
-        if (isset($config['http_client_handler'])) {
-            if ($config['http_client_handler'] instanceof FacebookHttpClientInterface) {
-                $httpClientHandler = $config['http_client_handler'];
-            } elseif ($config['http_client_handler'] === 'curl') {
-                $httpClientHandler = new FacebookCurlHttpClient();
-            } elseif ($config['http_client_handler'] === 'stream') {
-                $httpClientHandler = new FacebookStreamHttpClient();
-            } elseif ($config['http_client_handler'] === 'guzzle') {
-                $httpClientHandler = new FacebookGuzzleHttpClient();
-            } else {
-                throw new \InvalidArgumentException('The http_client_handler must be set to "curl", "stream", "guzzle", or be an instance of facebook-sdk-v5\HttpClients\FacebookHttpClientInterface');
-            }
-        }
-
-        $enableBeta = isset($config['enable_beta_mode']) && $config['enable_beta_mode'] === true;
-        $this->client = new FacebookClient($httpClientHandler, $enableBeta);
-
-        if (isset($config['url_detection_handler'])) {
-            if ($config['url_detection_handler'] instanceof UrlDetectionInterface) {
-                $this->urlDetectionHandler = $config['url_detection_handler'];
-            } else {
-                throw new \InvalidArgumentException('The url_detection_handler must be an instance of facebook-sdk-v5\Url\UrlDetectionInterface');
-            }
-        }
-
-        if (isset($config['pseudo_random_string_generator'])) {
-            if ($config['pseudo_random_string_generator'] instanceof PseudoRandomStringGeneratorInterface) {
-                $this->pseudoRandomStringGenerator = $config['pseudo_random_string_generator'];
-            } elseif ($config['pseudo_random_string_generator'] === 'mcrypt') {
-                $this->pseudoRandomStringGenerator = new McryptPseudoRandomStringGenerator();
-            } elseif ($config['pseudo_random_string_generator'] === 'openssl') {
-                $this->pseudoRandomStringGenerator = new OpenSslPseudoRandomStringGenerator();
-            } elseif ($config['pseudo_random_string_generator'] === 'urandom') {
-                $this->pseudoRandomStringGenerator = new UrandomPseudoRandomStringGenerator();
-            } else {
-                throw new \InvalidArgumentException('The pseudo_random_string_generator must be set to "mcrypt", "openssl", or "urandom", or be an instance of facebook-sdk-v5\PseudoRandomString\PseudoRandomStringGeneratorInterface');
-            }
-        }
-
-        if (isset($config['persistent_data_handler'])) {
-            if ($config['persistent_data_handler'] instanceof PersistentDataInterface) {
-                $this->persistentDataHandler = $config['persistent_data_handler'];
-            } elseif ($config['persistent_data_handler'] === 'session') {
-                $this->persistentDataHandler = new FacebookSessionPersistentDataHandler();
-            } elseif ($config['persistent_data_handler'] === 'memory') {
-                $this->persistentDataHandler = new FacebookMemoryPersistentDataHandler();
-            } else {
-                throw new \InvalidArgumentException('The persistent_data_handler must be set to "session", "memory", or be an instance of facebook-sdk-v5\PersistentData\PersistentDataInterface');
-            }
-        }
+        $this->app = new FacebookApp($config['app_id'], $config['app_secret']);
+        $this->client = new FacebookClient(
+            HttpClientsFactory::createHttpClient($config['http_client_handler']),
+            $config['enable_beta_mode']
+        );
+        $this->pseudoRandomStringGenerator = PseudoRandomStringGeneratorFactory::createPseudoRandomStringGenerator(
+            $config['pseudo_random_string_generator']
+        );
+        $this->setUrlDetectionHandler($config['url_detection_handler'] ?: new FacebookUrlDetectionHandler());
+        $this->persistentDataHandler = PersistentDataFactory::createPersistentDataHandler(
+            $config['persistent_data_handler']
+        );
 
         if (isset($config['default_access_token'])) {
             $this->setDefaultAccessToken($config['default_access_token']);
         }
 
-        if (isset($config['default_graph_version'])) {
-            $this->defaultGraphVersion = $config['default_graph_version'];
-        } else {
-            // @todo v6: Throw an InvalidArgumentException if "default_graph_version" is not set
-            $this->defaultGraphVersion = static::DEFAULT_GRAPH_VERSION;
-        }
+        // @todo v6: Throw an InvalidArgumentException if "default_graph_version" is not set
+        $this->defaultGraphVersion = $config['default_graph_version'];
     }
 
     /**
@@ -257,11 +216,17 @@ class Facebook
      */
     public function getUrlDetectionHandler()
     {
-        if (!$this->urlDetectionHandler instanceof UrlDetectionInterface) {
-            $this->urlDetectionHandler = new FacebookUrlDetectionHandler();
-        }
-
         return $this->urlDetectionHandler;
+    }
+
+    /**
+     * Changes the URL detection handler.
+     *
+     * @param UrlDetectionInterface $urlDetectionHandler
+     */
+    private function setUrlDetectionHandler(UrlDetectionInterface $urlDetectionHandler)
+    {
+        $this->urlDetectionHandler = $urlDetectionHandler;
     }
 
     /**
@@ -295,7 +260,7 @@ class Facebook
             return;
         }
 
-        throw new \InvalidArgumentException('The default access token must be of type "string" or facebook-sdk-v5\AccessToken');
+        throw new \InvalidArgumentException('The default access token must be of type "string" or Facebook\AccessToken');
     }
 
     /**
@@ -585,5 +550,65 @@ class Facebook
     public function videoToUpload($pathToFile)
     {
         return new FacebookVideo($pathToFile);
+    }
+
+    /**
+     * Upload a video in chunks.
+     *
+     * @param int $target The id of the target node before the /videos edge.
+     * @param string $pathToFile The full path to the file.
+     * @param array $metadata The metadata associated with the video file.
+     * @param string|null $accessToken The access token.
+     * @param int $maxTransferTries The max times to retry a failed upload chunk.
+     * @param string|null $graphVersion The Graph API version to use.
+     *
+     * @return array
+     *
+     * @throws FacebookSDKException
+     */
+    public function uploadVideo($target, $pathToFile, $metadata = [], $accessToken = null, $maxTransferTries = 5, $graphVersion = null)
+    {
+        $accessToken = $accessToken ?: $this->defaultAccessToken;
+        $graphVersion = $graphVersion ?: $this->defaultGraphVersion;
+
+        $uploader = new FacebookResumableUploader($this->app, $this->client, $accessToken, $graphVersion);
+        $endpoint = '/'.$target.'/videos';
+        $file = $this->videoToUpload($pathToFile);
+        $chunk = $uploader->start($endpoint, $file);
+
+        do {
+            $chunk = $this->maxTriesTransfer($uploader, $endpoint, $chunk, $maxTransferTries);
+        } while (!$chunk->isLastChunk());
+
+        return [
+          'video_id' => $chunk->getVideoId(),
+          'success' => $uploader->finish($endpoint, $chunk->getUploadSessionId(), $metadata),
+        ];
+    }
+
+    /**
+     * Attempts to upload a chunk of a file in $retryCountdown tries.
+     *
+     * @param FacebookResumableUploader $uploader
+     * @param string $endpoint
+     * @param FacebookTransferChunk $chunk
+     * @param int $retryCountdown
+     *
+     * @return FacebookTransferChunk
+     *
+     * @throws FacebookSDKException
+     */
+    private function maxTriesTransfer(FacebookResumableUploader $uploader, $endpoint, FacebookTransferChunk $chunk, $retryCountdown)
+    {
+        $newChunk = $uploader->transfer($endpoint, $chunk, $retryCountdown < 1);
+
+        if ($newChunk !== $chunk) {
+            return $newChunk;
+        }
+
+        $retryCountdown--;
+
+        // If transfer() returned the same chunk entity, the transfer failed but is resumable.
+        return $this->maxTriesTransfer($uploader, $endpoint, $chunk, $retryCountdown);
     }
 }

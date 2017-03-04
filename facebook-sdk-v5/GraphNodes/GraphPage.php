@@ -1,14 +1,14 @@
 <?php
 /**
- * Copyright 2014 facebook-sdk-v5, Inc.
+ * Copyright 2017 Facebook, Inc.
  *
  * You are hereby granted a non-exclusive, worldwide, royalty-free license to
  * use, copy, modify, and distribute this software in source code or binary
  * form for use in connection with the web services and APIs provided by
- * facebook-sdk-v5.
+ * Facebook.
  *
- * As with any software that integrates with the facebook-sdk-v5 platform, your use
- * of this software is subject to the facebook-sdk-v5 Developer Principles and
+ * As with any software that integrates with the Facebook platform, your use
+ * of this software is subject to the Facebook Developer Principles and
  * Policies [http://developers.facebook.com/policy/]. This copyright notice
  * shall be included in all copies or substantial portions of the software.
  *
@@ -26,7 +26,7 @@ namespace Facebook\GraphNodes;
 /**
  * Class GraphPage
  *
- * @package facebook-sdk-v5
+ * @package Facebook
  */
 class GraphPage extends GraphNode
 {
@@ -37,6 +37,8 @@ class GraphPage extends GraphNode
         'best_page' => '\Facebook\GraphNodes\GraphPage',
         'global_brand_parent_page' => '\Facebook\GraphNodes\GraphPage',
         'location' => '\Facebook\GraphNodes\GraphLocation',
+        'cover' => '\Facebook\GraphNodes\GraphCoverPhoto',
+        'picture' => '\Facebook\GraphNodes\GraphPicture',
     ];
 
     /**
@@ -70,7 +72,7 @@ class GraphPage extends GraphNode
     }
 
     /**
-     * Returns the best available Page on facebook-sdk-v5.
+     * Returns the best available Page on Facebook.
      *
      * @return GraphPage|null
      */
@@ -97,6 +99,26 @@ class GraphPage extends GraphNode
     public function getLocation()
     {
         return $this->getField('location');
+    }
+
+    /**
+     * Returns CoverPhoto of the Page.
+     *
+     * @return GraphCoverPhoto|null
+     */
+    public function getCover()
+    {
+        return $this->getField('cover');
+    }
+
+    /**
+     * Returns Picture of the Page.
+     *
+     * @return GraphPicture|null
+     */
+    public function getPicture()
+    {
+        return $this->getField('picture');
     }
 
     /**

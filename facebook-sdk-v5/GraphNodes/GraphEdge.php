@@ -1,14 +1,14 @@
 <?php
 /**
- * Copyright 2014 facebook-sdk-v5, Inc.
+ * Copyright 2017 Facebook, Inc.
  *
  * You are hereby granted a non-exclusive, worldwide, royalty-free license to
  * use, copy, modify, and distribute this software in source code or binary
  * form for use in connection with the web services and APIs provided by
- * facebook-sdk-v5.
+ * Facebook.
  *
- * As with any software that integrates with the facebook-sdk-v5 platform, your use
- * of this software is subject to the facebook-sdk-v5 Developer Principles and
+ * As with any software that integrates with the Facebook platform, your use
+ * of this software is subject to the Facebook Developer Principles and
  * Policies [http://developers.facebook.com/policy/]. This copyright notice
  * shall be included in all copies or substantial portions of the software.
  *
@@ -30,7 +30,7 @@ use Facebook\Exceptions\FacebookSDKException;
 /**
  * Class GraphEdge
  *
- * @package facebook-sdk-v5
+ * @package Facebook
  */
 class GraphEdge extends Collection
 {
@@ -153,35 +153,13 @@ class GraphEdge extends Collection
         $this->validateForPagination();
 
         // Do we have a paging URL?
-        if (isset($this->metaData['paging'][$direction])) {
-            // Graph returns the full URL with all the original params.
-            // We just want the endpoint though.
-            $pageUrl = $this->metaData['paging'][$direction];
-
-            return FacebookUrlManipulator::baseGraphUrlEndpoint($pageUrl);
-        }
-
-        // Do we have a cursor to work with?
-        $cursorDirection = $direction === 'next' ? 'after' : 'before';
-        $cursor = $this->getCursor($cursorDirection);
-        if (!$cursor) {
+        if (!isset($this->metaData['paging'][$direction])) {
             return null;
         }
 
-        // If we don't know the ID of the parent node, this ain't gonna work.
-        if (!$this->parentEdgeEndpoint) {
-            return null;
-        }
+        $pageUrl = $this->metaData['paging'][$direction];
 
-        // We have the parent node ID, paging cursor & original request.
-        // These were the ingredients chosen to create the perfect little URL.
-        $pageUrl = $this->parentEdgeEndpoint . '?' . $cursorDirection . '=' . urlencode($cursor);
-
-        // Pull in the original params
-        $originalUrl = $this->request->getUrl();
-        $pageUrl = FacebookUrlManipulator::mergeUrlParams($originalUrl, $pageUrl);
-
-        return FacebookUrlManipulator::forceSlashPrefix($pageUrl);
+        return FacebookUrlManipulator::baseGraphUrlEndpoint($pageUrl);
     }
 
     /**
@@ -256,5 +234,19 @@ class GraphEdge extends Collection
         }
 
         return null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function map(\Closure $callback)
+    {
+        return new static(
+            $this->request,
+            array_map($callback, $this->items, array_keys($this->items)),
+            $this->metaData,
+            $this->parentEdgeEndpoint,
+            $this->subclassName
+        );
     }
 }

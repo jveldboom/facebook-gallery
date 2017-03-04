@@ -1,14 +1,14 @@
 <?php
 /**
- * Copyright 2014 facebook-sdk-v5, Inc.
+ * Copyright 2017 Facebook, Inc.
  *
  * You are hereby granted a non-exclusive, worldwide, royalty-free license to
  * use, copy, modify, and distribute this software in source code or binary
  * form for use in connection with the web services and APIs provided by
- * facebook-sdk-v5.
+ * Facebook.
  *
- * As with any software that integrates with the facebook-sdk-v5 platform, your use
- * of this software is subject to the facebook-sdk-v5 Developer Principles and
+ * As with any software that integrates with the Facebook platform, your use
+ * of this software is subject to the Facebook Developer Principles and
  * Policies [http://developers.facebook.com/policy/]. This copyright notice
  * shall be included in all copies or substantial portions of the software.
  *
@@ -29,7 +29,7 @@ use Facebook\Exceptions\FacebookSDKException;
 /**
  * Class FacebookCurlHttpClient
  *
- * @package facebook-sdk-v5
+ * @package Facebook
  */
 class FacebookCurlHttpClient implements FacebookHttpClientInterface
 {
@@ -52,16 +52,6 @@ class FacebookCurlHttpClient implements FacebookHttpClientInterface
      * @var FacebookCurl Procedural curl as object
      */
     protected $facebookCurl;
-
-    /**
-     * @const Curl Version which is unaffected by the proxy header length error.
-     */
-    const CURL_PROXY_QUIRK_VER = 0x071E00;
-
-    /**
-     * @const "Connection Established" header text
-     */
-    const CONNECTION_ESTABLISHED = "HTTP/1.0 200 Connection established\r\n\r\n";
 
     /**
      * @param FacebookCurl|null Procedural curl as object
@@ -164,47 +154,10 @@ class FacebookCurlHttpClient implements FacebookHttpClientInterface
      */
     public function extractResponseHeadersAndBody()
     {
-        $headerSize = $this->getHeaderSize();
-
-        $rawHeaders = mb_substr($this->rawResponse, 0, $headerSize);
-        $rawBody = mb_substr($this->rawResponse, $headerSize);
+        $parts = explode("\r\n\r\n", $this->rawResponse);
+        $rawBody = array_pop($parts);
+        $rawHeaders = implode("\r\n\r\n", $parts);
 
         return [trim($rawHeaders), trim($rawBody)];
-    }
-
-    /**
-     * Return proper header size
-     *
-     * @return integer
-     */
-    private function getHeaderSize()
-    {
-        $headerSize = $this->facebookCurl->getinfo(CURLINFO_HEADER_SIZE);
-        // This corrects a Curl bug where header size does not account
-        // for additional Proxy headers.
-        if ($this->needsCurlProxyFix()) {
-            // Additional way to calculate the request body size.
-            if (preg_match('/Content-Length: (\d+)/', $this->rawResponse, $m)) {
-                $headerSize = mb_strlen($this->rawResponse) - $m[1];
-            } elseif (stripos($this->rawResponse, self::CONNECTION_ESTABLISHED) !== false) {
-                $headerSize += mb_strlen(self::CONNECTION_ESTABLISHED);
-            }
-        }
-
-        return $headerSize;
-    }
-
-    /**
-     * Detect versions of Curl which report incorrect header lengths when
-     * using Proxies.
-     *
-     * @return boolean
-     */
-    private function needsCurlProxyFix()
-    {
-        $ver = $this->facebookCurl->version();
-        $version = $ver['version_number'];
-
-        return $version < self::CURL_PROXY_QUIRK_VER;
     }
 }

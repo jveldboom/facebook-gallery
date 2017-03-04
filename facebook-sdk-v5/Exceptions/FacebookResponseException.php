@@ -1,14 +1,14 @@
 <?php
 /**
- * Copyright 2014 facebook-sdk-v5, Inc.
+ * Copyright 2017 Facebook, Inc.
  *
  * You are hereby granted a non-exclusive, worldwide, royalty-free license to
  * use, copy, modify, and distribute this software in source code or binary
  * form for use in connection with the web services and APIs provided by
- * facebook-sdk-v5.
+ * Facebook.
  *
- * As with any software that integrates with the facebook-sdk-v5 platform, your use
- * of this software is subject to the facebook-sdk-v5 Developer Principles and
+ * As with any software that integrates with the Facebook platform, your use
+ * of this software is subject to the Facebook Developer Principles and
  * Policies [http://developers.facebook.com/policy/]. This copyright notice
  * shall be included in all copies or substantial portions of the software.
  *
@@ -28,7 +28,7 @@ use Facebook\FacebookResponse;
 /**
  * Class FacebookResponseException
  *
- * @package facebook-sdk-v5
+ * @package Facebook
  */
 class FacebookResponseException extends FacebookSDKException
 {
@@ -77,8 +77,6 @@ class FacebookResponseException extends FacebookSDKException
         $code = isset($data['error']['code']) ? $data['error']['code'] : null;
         $message = isset($data['error']['message']) ? $data['error']['message'] : 'Unknown error from Graph.';
 
-        $previousException = null;
-
         if (isset($data['error']['error_subcode'])) {
             switch ($data['error']['error_subcode']) {
                 // Other authentication issues
@@ -89,6 +87,14 @@ class FacebookResponseException extends FacebookSDKException
                 case 464:
                 case 467:
                     return new static($response, new FacebookAuthenticationException($message, $code));
+                // Video upload resumable error
+                case 1363030:
+                case 1363019:
+                case 1363037:
+                case 1363033:
+                case 1363021:
+                case 1363041:
+                    return new static($response, new FacebookResumableUploadException($message, $code));
             }
         }
 
